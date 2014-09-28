@@ -5,6 +5,7 @@ import QSTK.qstkutil.DataAccess as da
 import datetime as dt
 import matplotlib.pyplot as plt
 import pandas as pd
+import numpy as np
 
 ## Homework | Based Off Template of QSTK Tutorial 1
 
@@ -13,6 +14,7 @@ dt_start = dt.datetime(2006, 1, 1)
 dt_end = dt.datetime(2010, 12, 31)
 dt_timeofday = dt.timedelta(hours=16)
 ldt_timestamps = du.getNYSEdays(dt_start, dt_end, dt_timeofday)
+ls_allocation = [0.2,0.3,0.4,0.1]
 
 c_dataobj = da.DataAccess('Yahoo')
 ls_keys = ['open', 'high', 'low', 'close', 'volume', 'actual_close']
@@ -50,23 +52,25 @@ def simulate(start_date, end_date, symbols, allocations):
 	na_price = d_data['close'].values
 	na_normalized_price = na_price / na_price[0, :]
 
+	global na_rets
 	na_rets = na_normalized_price.copy()
-	daily_ret = tsu.returnize0(na_rets)
+	tsu.returnize0(na_rets)
+	global test
+
+	test =  na_rets * allocations
+
 
 
 
 	## sqStdDev = np.std(squareArray)
-	print na_price
-	print na_normalized_price
-	print na_rets
-	print daily_ret
+	print "std dev: "
 
 def run():
 	print 'Running HW1 Script'
-	dt_start = dt.datetime(2006, 1, 1)
-	dt_end = dt.datetime(2010, 12, 31)
-	ls_symbols = ['GOOG','AAPL','GLD','XOM']
-	ls_allocation = [0.2,0.3,0.4,0.1]
+	dt_start = dt.datetime(2011, 1, 1)
+	dt_end = dt.datetime(2011, 12, 31)
+	ls_symbols = ['AAPL','GLD','GOOG','XOM']
+	ls_allocation = [0.4,0.4,0.0,0.2]
 	simulate(dt_start,dt_end,ls_symbols,ls_allocation)
 
 
