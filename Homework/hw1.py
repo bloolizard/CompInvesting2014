@@ -45,7 +45,6 @@ plt.scatter(na_rets[:, 3], na_rets[:, 1], c='blue')
 ## And risk free rate = 0) of the total portfolio
 ## Cumulative return of the total portfolio
 def simulate(start_date, end_date, symbols, allocations):
-	print 'starting simimulation'
 	ldt_timestamps = du.getNYSEdays(start_date, end_date, dt_timeofday)
 	ldf_data = c_dataobj.get_data(ldt_timestamps, symbols, ls_keys)
 	d_data = dict(zip(ls_keys, ldf_data))
@@ -75,9 +74,9 @@ def simulate(start_date, end_date, symbols, allocations):
 
 def run():
 	print 'Running HW1 Script'
-	dt_start = dt.datetime(2011, 1, 1)
-	dt_end = dt.datetime(2011, 12, 31)
-	ls_symbols = ['AAPL','GLD','GOOG','XOM']
+	dt_start = dt.datetime(2010, 1, 1)
+	dt_end = dt.datetime(2010, 12, 31)
+	ls_symbols = ['BRCM','ADBE','AMD','ADI']
 	ls_allocation = [0.4,0.4,0.0,0.2]
 	simulate(dt_start,dt_end,ls_symbols,ls_allocation)
 
@@ -95,14 +94,39 @@ def test_1():
 ##
 def run_opt():
 	print 'Running Portfolio Optimizer'
-	dt_start = dt.datetime(2011, 1, 1)
-	dt_end = dt.datetime(2011, 12, 31)
-	ls_symbols = ['AAPL','GLD','GOOG','XOM']
+	dt_start = dt.datetime(2010, 1, 1)
+	dt_end = dt.datetime(2010, 12, 31)
+	ls_symbols = ['AAPL','GOOG','IBM','MSFT']
 	ls_allocation = [0.4,0.4,0.0,0.2]
 	
 
 	lf_alloc = [0.0, 0.0, 0.0, 0.0]
-	print simulate(dt_start,dt_end,ls_symbols,ls_allocation)
+	max_sharpe = -1000
+	final_stddev = -1000
+	final_dly_return = -1000
+	final_cum_ret = -1000
+	best_portfolio = lf_alloc
 
+
+	for i in range(0, 101, 10):
+		left_after_i = 101 - i
+		for j in range(0, left_after_i, 10):
+			left_after_j = 101 - i - j
+			for k in range(0, left_after_j, 10):
+				left_after_k = 100 - i - j - k
+				lf_alloc = [i, j, k, left_after_k]
+				std, dly_rt, sharpe, cum_ret = simulate(dt_start, dt_end, ls_symbols, lf_alloc)
+				if sharpe > max_sharpe:
+					max_sharpe = sharpe
+					final_stddev = std
+					final_cum_ret = cum_ret
+					final_dly_return = dly_rt
+					best_portfolio = lf_alloc
+
+	print "Best Portfolio: ",  best_portfolio
+	print "Max Sharpe: ", max_sharpe
+	print "Final STD", final_stddev
+	print "Final Cum Return: ", final_cum_ret
+	print "Final Daily Return: ", final_dly_return
 
 run_opt()
