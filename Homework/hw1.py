@@ -52,18 +52,26 @@ def simulate(start_date, end_date, symbols, allocations):
 	na_price = d_data['close'].values
 	na_normalized_price = na_price / na_price[0, :]
 
-	global na_rets
-	na_rets = na_normalized_price.copy()
-	tsu.returnize0(na_rets)
-	global test
 
-	test =  na_rets * allocations
+	na_rets = na_normalized_price.copy()
+	
+	
+	na_portrets = np.sum(na_rets * allocations, axis=1)
+	cum_ret = na_portrets[-1]
+
+	tsu.returnize0(na_portrets)
+
+	avg_daily_return = np.mean(na_portrets)
+	std_dev = np.std(na_portrets)
+
+	k = np.sqrt(250)
+	sharpe_ratio = k * avg_daily_return/std_dev
 
 
 
 
 	## sqStdDev = np.std(squareArray)
-	print "std dev: "
+	return std_dev, avg_daily_return, sharpe_ratio, cum_ret
 
 def run():
 	print 'Running HW1 Script'
@@ -73,5 +81,28 @@ def run():
 	ls_allocation = [0.4,0.4,0.0,0.2]
 	simulate(dt_start,dt_end,ls_symbols,ls_allocation)
 
+def test_1():
+	print 'Running Test 1'
+	dt_start = dt.datetime(2011, 1, 1)
+	dt_end = dt.datetime(2011, 12, 31)
+	ls_symbols = ['AAPL','GLD','GOOG','XOM']
+	ls_allocation = [0.4,0.4,0.0,0.2]
+	print simulate(dt_start,dt_end,ls_symbols,ls_allocation)
 
-run()
+
+## Create a for loop (or nested for loop) that enables you to test every "legal" set of allocations to the 4 stocks. 
+## Keep track of the "best" portfolio, and print it out at the end.
+##
+def run_opt():
+	print 'Running Portfolio Optimizer'
+	dt_start = dt.datetime(2011, 1, 1)
+	dt_end = dt.datetime(2011, 12, 31)
+	ls_symbols = ['AAPL','GLD','GOOG','XOM']
+	ls_allocation = [0.4,0.4,0.0,0.2]
+	
+
+	lf_alloc = [0.0, 0.0, 0.0, 0.0]
+	print simulate(dt_start,dt_end,ls_symbols,ls_allocation)
+
+
+run_opt()
